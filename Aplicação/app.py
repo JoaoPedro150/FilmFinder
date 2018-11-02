@@ -2,46 +2,57 @@
 import random
 import json
 import config
+import pymessenger.utils
+import requests
 
 from flask import Flask
 from flask import request
 from flask import abort
-from pymessenger.bot import Bot
+from flask import json
+from threading import Thread
 
-ACCESS_TOKEN = config.ACCESS_TOKEN
 VERIFY_TOKEN = config.VERIFY_TOKEN
+REPLY_URL = 'https://graph.facebook.com/v2.6/me/messages?access_token=' + config.ACCESS_TOKEN
 
 app = Flask(__name__)
-bot = Bot(ACCESS_TOKEN)
 
-# Aqui chegaram as mensagens enviadas pelo Facebook
-@app.route("/", methods=['GET', 'POST'])
+@app.route('/', methods=['POST'])
 def recebe_mensagem():
-    if request.method == 'GET':
-        return autenticacao()
-    else:
-        return interpreta_mensagem() 
-
-# Verifica se a requisição veio do Facebook
-def autenticacao():
-    return request.args.get("hub.challenge") if request.args.get("hub.verify_token") == VERIFY_TOKEN else abort(403)
-
-def interpreta_mensagem():
-    output = request.get_json()
-
-    for event in output['entry']:
-        messaging = event['messaging']
-        for message in messaging:
-            if message.get('message'):
-                #Facebook Messenger ID for user so we know where to send response back to
-                recipient_id = message['sender']['id']
-                if message['message'].get('text') is not None:
-                    bot.send_text_message(recipient_id, "Mensagem a ser enviada")
-                #if user sends us a GIF, photo,video, or any other non-text item
-                if message['message'].get('attachments'):
-                    bot.send_text_message(recipient_id, "Mensagem a ser enviada")
+    Thread(target=interpreta_mensagem,args=([request._get_current_object()])).start()
 
     return "", 200
 
-if __name__ == "__main__":
-    app.run(debug=True, port=8080)
+@app.route('/', methods=['GET'])
+def autenticacao():
+    if request.args.get('hub.mode') == 'subscribe' and request.args.get('hub.verify_token') == VERIFY_TOKEN:
+        return request.args.get('hub.challenge')
+    else: 
+        abort(403)
+
+def envia_mensagem(recipient_id, message):
+    requests.post(REPLY_URL, json={'recipient': {'id': recipient_id}, 'message': {'text': message}})  
+
+def interpreta_mensagem(request):
+    for event in request.get_json()['entry']:   
+        for entry in event['messaging']:
+            sender_id = entry['sender']['id']
+
+            message =  entry.get('message')
+
+            if message:
+                if message.get('is_echo') is None:
+                    print(message)
+
+                    message_text = message.get('text')
+
+                    if message_text:
+                        envia_mensagem(sender_id, message_text)
+
+                    else:
+                        message_attachments = message.get('attachments')
+
+                        if message_attachments:
+                            envia_mensagem(sender_id, 'Mensagem a ser enviada')
+
+if __name__ == '__main__':
+    app.run(port=8080, debug=True)
