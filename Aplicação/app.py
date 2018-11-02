@@ -1,8 +1,6 @@
-#Python libraries that we need to import for our bot
 import random
 import json
 import config
-import pymessenger.utils
 import requests
 
 from flask import Flask
@@ -10,9 +8,6 @@ from flask import request
 from flask import abort
 from flask import json
 from threading import Thread
-
-VERIFY_TOKEN = config.VERIFY_TOKEN
-REPLY_URL = 'https://graph.facebook.com/v2.6/me/messages?access_token=' + config.ACCESS_TOKEN
 
 app = Flask(__name__)
 
@@ -24,13 +19,14 @@ def recebe_mensagem():
 
 @app.route('/', methods=['GET'])
 def autenticacao():
-    if request.args.get('hub.mode') == 'subscribe' and request.args.get('hub.verify_token') == VERIFY_TOKEN:
+    if request.args.get('hub.mode') == 'subscribe' and request.args.get('hub.verify_token') == config.VERIFY_TOKEN:
         return request.args.get('hub.challenge')
     else: 
         abort(403)
 
 def envia_mensagem(recipient_id, message):
-    requests.post(REPLY_URL, json={'recipient': {'id': recipient_id}, 'message': {'text': message}})  
+    requests.post('https://graph.facebook.com/v2.6/me/messages?access_token=' + config.ACCESS_TOKEN,
+    json={'recipient': {'id': recipient_id}, 'message': {'text': message}})  
 
 def interpreta_mensagem(request):
     for event in request.get_json()['entry']:   
