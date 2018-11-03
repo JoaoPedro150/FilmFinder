@@ -1,12 +1,15 @@
 import config
 import requests
+import json
+import chat
 
 from threading import Thread
 
-BASE_URL = 'https://graph.facebook.com/v2.6/me/messages?access_token=' + config.ACCESS_TOKEN
+BASE_URL = 'https://graph.facebook.com/'
+MESSAGE_SEND_URL = BASE_URL + 'v2.6/me/messages'
 
 def nova_mensagem(request):
-    Thread(target=interpreta_mensagem,args=([request])).start()
+    Thread(target=chat.nova_mensagem,args=([request])).start()
 
     return "", 200
 
@@ -17,29 +20,12 @@ def autenticacao(request):
         return "", 403
 
 def envia_mensagem(recipient_id, message):
-    requests.post(BASE_URL, json={'recipient': {'id': recipient_id}, 'message': {'text': message}})  
+    print(requests.post(MESSAGE_SEND_URL, json={'recipient': {'id': recipient_id},  'message': {'text': message}}, 
+    params={'access_token': config.ACCESS_TOKEN}).text)
 
 def envia_acao(recipient_id, action):
-    requests.post(BASE_URL, json={'recipient': {'id': recipient_id}, 'sender_action': action})  
+    requests.post(MESSAGE_SEND_URL, json={'recipient': {'id': recipient_id}, 'sender_action': action}, 
+    params={'access_token': config.ACCESS_TOKEN})
 
-def interpreta_mensagem(request):
-    for event in request.get_json()['entry']:   
-        for entry in event['messaging']:
-            sender_id = entry['sender']['id']
-
-            message =  entry.get('message')
-
-            if message:
-                if message.get('is_echo') is None:
-                    print(message)
-
-                    message_text = message.get('text')
-
-                    if message_text:
-                        envia_mensagem(sender_id, message_text)
-
-                    else:
-                        message_attachments = message.get('attachments')
-
-                        if message_attachments:
-                            envia_mensagem(sender_id, 'Mensagem a ser enviada')
+def obter_nome_usuario(recipient_id):
+    return json.loads(requests.get(BASE_URL + recipient_id, params={'fields': 'first_name', 'access_token': config.ACCESS_TOKEN}).text)['first_name']
