@@ -39,6 +39,11 @@ def envia_lista(recipient_id, lista):
     return envia(recipient_id, {'recipient':{'id': recipient_id}, 'message': {'attachment': {'type': 'template',
     'payload': {'template_type': 'generic','elements': elements}}}})
 
+def envia_imagem(recipient_id, url):
+    return envia(recipient_id, {"recipient":{"id": recipient_id}, 
+    "message": {"attachment": {"type": "image",
+    "payload": {"url": url,}}}})
+
 def envia_acao(recipient_id, action):
     return requests.post(MESSAGE_SEND_URL, json={'recipient': {'id': recipient_id}, 'sender_action': action},
     params={'access_token': config.ACCESS_TOKEN})
