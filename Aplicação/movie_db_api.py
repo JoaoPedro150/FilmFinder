@@ -23,11 +23,10 @@ def obtem_genero(genre_id):
     return genre_list[genre_id]
 
 def filme_detalhes(filme, language='pt-BR'):
-    print(language)
     return request(SEARCH_URL, {'query': filme}, language)
 
-def top_filmes():
-    return request(DISCOVER_URL, None)
+def top_filmes(page):
+    return request(DISCOVER_URL, {'page': page})
 
 def request(url, params, language='pt-BR'):
 

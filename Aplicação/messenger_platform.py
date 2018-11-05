@@ -1,17 +1,9 @@
 import config
 import requests
 import json
-import chat
-
-from threading import Thread
 
 BASE_URL = 'https://graph.facebook.com/'
 MESSAGE_SEND_URL = BASE_URL + 'v2.6/me/messages'
-
-def nova_mensagem(request):
-    Thread(target=chat.nova_mensagem,args=([request])).start()
-
-    return '', 200
 
 def autenticacao(request):
     if request.args.get('hub.mode') == 'subscribe' and request.args.get('hub.verify_token') == config.VERIFY_TOKEN:
@@ -19,22 +11,26 @@ def autenticacao(request):
     else: 
         return '', 403
 
+def envia_mensagem_texto_com_resposta(recipient_id, message, quick_replies):
+    for reply in quick_replies:
+        reply['content_type'] = 'text'
+    
+    return envia(recipient_id, {'message': {'text': message, 'quick_replies': quick_replies}})
+
 def envia_mensagem_texto(recipient_id, message):
     return envia(recipient_id, {'message': {'text': message}})
 
 def envia_lista(recipient_id, lista):
     elements = []
 
-    count = 1
-
     for item in lista:
-        elements.append({'title': '%dº - %s' % (count, item['title']),
+        elements.append({'title': item['title'],
         'subtitle': item['sinopse'],
         'image_url': item['poster_url'],
         'buttons': [{'type': 'postback',
-        'title': item['title'],
-        'payload': item['title']}]})
-        count += 1
+        'title': item['button'],
+        'payload': item['button']}]})
+  
 
     return envia(recipient_id, {'message': {'attachment': {'type': 'template',
     'payload': {'template_type': 'generic','elements': elements}}}})

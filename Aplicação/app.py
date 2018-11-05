@@ -1,13 +1,17 @@
+import logic
 import messenger_platform
 
 from flask import Flask
 from flask import request
+from threading import Thread
 
 app = Flask(__name__)
 
 @app.route('/', methods=['POST'])
 def post():
-    return messenger_platform.nova_mensagem(request._get_current_object())
+    Thread(target=logic.nova_mensagem,args=([request._get_current_object()])).start()
+
+    return '', 200
 
 @app.route('/', methods=['GET'])
 def get():
