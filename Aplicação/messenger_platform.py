@@ -20,7 +20,7 @@ def autenticacao(request):
         return '', 403
 
 def envia_mensagem_texto(recipient_id, message):
-    return envia(recipient_id, {'recipient': {'id': recipient_id},  'message': {'text': message}})
+    return envia(recipient_id, {'message': {'text': message}})
 
 def envia_lista(recipient_id, lista):
     elements = []
@@ -36,21 +36,18 @@ def envia_lista(recipient_id, lista):
         'payload': item['title']}]})
         count += 1
 
-    return envia(recipient_id, {'recipient':{'id': recipient_id}, 'message': {'attachment': {'type': 'template',
+    return envia(recipient_id, {'message': {'attachment': {'type': 'template',
     'payload': {'template_type': 'generic','elements': elements}}}})
 
 def envia_imagem(recipient_id, url):
-    return envia(recipient_id, {"recipient":{"id": recipient_id}, 
-    "message": {"attachment": {"type": "image",
-    "payload": {"url": url,}}}})
+    return envia(recipient_id, {'message': {'attachment': {'type': 'image',
+    'payload': {'url': url,'is_reusable': 'true'}}}})
 
 def envia_acao(recipient_id, action):
-    return requests.post(MESSAGE_SEND_URL, json={'recipient': {'id': recipient_id}, 'sender_action': action},
-    params={'access_token': config.ACCESS_TOKEN})
+    return envia(recipient_id, json={'sender_action': action})
 
 def envia(recipient_id, json):
-    envia_acao(recipient_id, 'typing_off')
-
+    json['recipient'] = {'id': recipient_id}
     return requests.post(MESSAGE_SEND_URL, json=json, params={'access_token': config.ACCESS_TOKEN})
 
 def obter_nome_usuario(recipient_id):
