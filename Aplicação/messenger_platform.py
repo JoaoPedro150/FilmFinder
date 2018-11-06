@@ -29,9 +29,8 @@ def envia_lista(recipient_id, lista):
         'image_url': item['poster_url'],
         'buttons': [{'type': 'postback',
         'title': item['button'],
-        'payload': item['button']}]})
+        'payload': json.dumps({'module': 'chat', 'function': 'consulta_filme', 'args': [{'arg': item['button']}]})}]})
   
-
     return envia(recipient_id, {'message': {'attachment': {'type': 'template',
     'payload': {'template_type': 'generic','elements': elements}}}})
 

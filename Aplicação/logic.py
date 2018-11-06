@@ -12,48 +12,31 @@ def nova_mensagem(request):
                 message =  entry.get('message')
 
                 if message:
-                    if not quick_reply(sender_id, message):
+                    if not postback(sender_id, message.get('quick_reply')):
                         message_text = message.get('text')
 
                         if message_text:
                             chat.consulta_filme(sender_id, message_text, 0)  
                 else:
-                    postback(sender_id, entry)
+                    postback(sender_id, entry.get('postback'))
                     
-def postback(sender_id, entry):
-    postback = entry.get('postback')
-                   
-    if postback:   
-        messenger_platform.envia_acao(sender_id, 'typing_on')
-
-        if postback['payload'] == 'comecar':
-            chat.boas_vindas(sender_id)
-        elif postback['payload'] == 'melhores filmes':
-            chat.top_filmes(sender_id)
-        else:
-            chat.consulta_filme(sender_id, postback['payload'])
-
-        messenger_platform.envia_acao(sender_id, 'typing_off')
-        return True
-    return False
-
-def quick_reply(sender_id, message):
-    postback = message.get('quick_reply')
+def postback(sender_id, postback):
 
     if postback:
         messenger_platform.envia_acao(sender_id, 'typing_on')
 
-        reply = postback['payload'].split(':')
-
-        if reply[0] == 'best':
-            chat.top_filmes(sender_id, int(reply[1]), int(reply[2]))
-        else:
-            if reply[2] == 'N':
-                chat.consulta_filme(sender_id, reply[0], int(reply[1]))
-            else:
-                messenger_platform.envia_acao(sender_id, 'typing_off')
-                messenger_platform.envia_mensagem_texto(sender_id, 'Fico feliz em ajudar :D')
+        reply = json.loads(postback['payload'])
+        executar(sender_id, reply['module'], reply['function'], reply.get('args'))
 
         messenger_platform.envia_acao(sender_id, 'typing_off')
         return True
     return False
+
+def executar(sender_id, modulo, funcao, args):
+    args_ = [sender_id]
+
+    if args:
+        for i in range(len(args)):
+            args_.append(args[i]['arg'])
+    
+    getattr(globals()[modulo], funcao).__call__(*args_)

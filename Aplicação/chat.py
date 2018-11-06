@@ -13,7 +13,7 @@ def consulta_filme(recipient_id, filme, result=-1):
     if total_resultados == 0 or result >= total_resultados:
         messenger_platform.envia_acao(recipient_id, 'typing_off')
         messenger_platform.envia_mensagem_texto(recipient_id, 'Desculpe, não consegui encontrar o filme que você procura :/')
-        return 
+        return
    
     if result > 0:
         detalhes = detalhes['results'][result]
@@ -27,7 +27,14 @@ def consulta_filme(recipient_id, filme, result=-1):
     
     if result <= total_resultados and result >= 0:
         messenger_platform.envia_mensagem_texto_com_resposta(recipient_id, 'É este o filme que você procura?',
-        [{'title': 'Sim', 'payload': '%s:%d:S' % (filme, result+1)}, {'title': 'Não', 'payload': '%s:%d:S' % (filme, result+1)}])
+        [{'title': 'Sim', 'payload': json.dumps({
+        'module': 'messenger_platform', 
+        'function': 'envia_mensagem_texto',
+        'args': [{'arg': 'Fico feliz em ajudar :D'}]})}, 
+        {'title': 'Não', 'payload': json.dumps({
+        'module': 'chat', 
+        'function': 'consulta_filme',
+        'args': [{'arg': filme}, {'arg': result+1}]})}])
 
 def envia_detalhes_filme(recipient_id, detalhes):
     image_url = detalhes['poster_path']
@@ -79,8 +86,6 @@ def envia_detalhes_filme(recipient_id, detalhes):
 def top_filmes(recipient_id, page=1, result=0):
     filmes_lista = []
 
-    print(result)
-
     if result > 0 and result % 20 == 0:
         page += 1
         result = 0
@@ -105,8 +110,8 @@ def top_filmes(recipient_id, page=1, result=0):
 
     messenger_platform.envia_lista(recipient_id, filmes_lista)
     messenger_platform.envia_acao(recipient_id, 'typing_off')
-    messenger_platform.envia_mensagem_texto_com_resposta(recipient_id, 'Deseja ver mais?',
-    [{'title': 'Sim', 'payload': 'best:%d:%d' % (page,result)}])    
+    return messenger_platform.envia_mensagem_texto_com_resposta(recipient_id, 'Deseja ver mais?',
+    [{'title': 'Sim', 'payload': json.dumps({'module': 'chat', 'function': 'top_filmes', 'args': [{'arg': page}, {'arg': result}]})}])    
 
 def boas_vindas(recipient_id):
     messenger_platform.envia_mensagem_texto(recipient_id, 'Olá ' + messenger_platform.obter_nome_usuario(recipient_id) + ', tudo bem?\n' +
