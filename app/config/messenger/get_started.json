@@ -1,0 +1,5 @@
+{ 
+    "get_started":{
+      "payload":"{\"module\": \"chat\", \"function\": \"envia_boas_vindas\"}"
+    }
+  }

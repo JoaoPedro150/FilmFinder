@@ -1,4 +1,4 @@
-import keys
+from config import keys
 import requests
 import json
 
@@ -10,12 +10,6 @@ def autenticacao(request):
         return request.args.get('hub.challenge')
     else: 
         return '', 403
-
-def envia_mensagem_texto_com_resposta(recipient_id, message, quick_replies):
-    for reply in quick_replies:
-        reply['content_type'] = 'text'
-    
-    return envia(recipient_id, {'message': {'text': message, 'quick_replies': quick_replies}})
 
 def envia_mensagem_texto(recipient_id, message):
     return envia(recipient_id, {'message': {'text': message}})
@@ -55,11 +49,6 @@ def envia_imagem_com_botao(recipient_id, filme, buttons):
         json['message']['attachment']['payload']['elements'][0]['buttons'] = buttons
     
     return envia(recipient_id, json)
-
-# def envia_link(recipient_id, url):
-#     return envia(recipient_id, {"message":{"attachment":{"type":"template",
-#     "payload":{"template_type":"open_graph",
-#     "elements":[{ "url": url}]}}}})
 
 def envia_acao(recipient_id, action):
     return envia(recipient_id, json={'sender_action': action})

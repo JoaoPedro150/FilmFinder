@@ -1,0 +1,30 @@
+{
+    "persistent_menu": [
+        {
+            "locale": "default",
+            "call_to_actions": [
+                {
+                    "title": "Descubra filmes",
+                    "type": "nested",
+                    "call_to_actions": [
+                        {
+                            "title": "Filmes em alta",
+                            "type": "postback",
+                            "payload": "{\"module\": \"chat\", \"function\": \"envia_lista_filmes\", \"args\": [{\"arg\": \"obtem_top_filmes_populares\"}]}"
+                        },
+                        {
+                            "title": "Filmes mais aguardados",
+                            "type": "postback",
+                            "payload": "{\"module\": \"chat\", \"function\": \"envia_lista_filmes\", \"args\": [{\"arg\": \"obtem_proximos_lancamentos\"}]}"
+                        },
+                        {
+                            "title": "Mais bem avaliados",
+                            "type": "postback",
+                            "payload": "{\"module\": \"chat\", \"function\": \"envia_lista_filmes\", \"args\": [{\"arg\": \"obtem_top_filmes\"}]}"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

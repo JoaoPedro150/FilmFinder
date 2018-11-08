@@ -16,8 +16,6 @@ def nova_mensagem(request):
                     if not postback(sender_id, message.get('quick_reply')):
                         message_text = message.get('text')
 
-                        print(message_text)
-
                         if message_text:
                             chat.consulta_filme(sender_id, message_text, 0)
                 else:
@@ -27,14 +25,11 @@ def postback(sender_id, postback):
 
     if postback:
         messenger_api.envia_acao(sender_id, 'typing_on')
-
         reply = json.loads(postback['payload'])
         executar(sender_id, reply['module'], reply['function'], reply.get('args'))
-
         messenger_api.envia_acao(sender_id, 'typing_off')
 
         return True
-
     return False
 
 def executar(sender_id, modulo, funcao, args):
@@ -44,4 +39,4 @@ def executar(sender_id, modulo, funcao, args):
         for i in range(len(args)):
             args_.append(args[i]['arg'])
     
-    getattr(globals()[modulo], funcao).__call__(*args_)
+    getattr(globals()[modulo], funcao)(*args_)
