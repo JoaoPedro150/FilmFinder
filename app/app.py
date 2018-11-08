@@ -1,5 +1,5 @@
 import logic
-import messenger_platform
+import messenger_api
 
 from flask import Flask
 from flask import request
@@ -15,7 +15,7 @@ def post():
 
 @app.route('/', methods=['GET'])
 def get():
-    return messenger_platform.autenticacao(request._get_current_object())
+    return messenger_api.autenticacao(request._get_current_object())
 
 if __name__ == '__main__':
     app.run(port=8080, debug=True)

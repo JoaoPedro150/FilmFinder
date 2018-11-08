@@ -1,4 +1,4 @@
 __pycache__/
-Aplicação/config.py
-Test/
-cache/
+app/keys.py
+test/
+app/cache/

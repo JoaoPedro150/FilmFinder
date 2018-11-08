@@ -1,8 +1,9 @@
-import messenger_platform
+import messenger_api
 import chat
 import json
-
+    
 def nova_mensagem(request):
+
     for event in request.get_json()['entry']:
         messaging = event.get('messaging')  
 
@@ -15,21 +16,25 @@ def nova_mensagem(request):
                     if not postback(sender_id, message.get('quick_reply')):
                         message_text = message.get('text')
 
+                        print(message_text)
+
                         if message_text:
-                            chat.consulta_filme(sender_id, message_text, 0)  
+                            chat.consulta_filme(sender_id, message_text, 0)
                 else:
                     postback(sender_id, entry.get('postback'))
                     
 def postback(sender_id, postback):
 
     if postback:
-        messenger_platform.envia_acao(sender_id, 'typing_on')
+        messenger_api.envia_acao(sender_id, 'typing_on')
 
         reply = json.loads(postback['payload'])
         executar(sender_id, reply['module'], reply['function'], reply.get('args'))
 
-        messenger_platform.envia_acao(sender_id, 'typing_off')
+        messenger_api.envia_acao(sender_id, 'typing_off')
+
         return True
+
     return False
 
 def executar(sender_id, modulo, funcao, args):
