@@ -8,12 +8,12 @@
                     "type": "nested",
                     "call_to_actions": [
                         {
-                            "title": "Filmes em alta",
+                            "title": "Em alta",
                             "type": "postback",
                             "payload": "{\"module\": \"chat\", \"function\": \"envia_lista_filmes\", \"args\": [{\"arg\": \"obtem_top_filmes_populares\"}]}"
                         },
                         {
-                            "title": "Filmes mais aguardados",
+                            "title": "Mais aguardados",
                             "type": "postback",
                             "payload": "{\"module\": \"chat\", \"function\": \"envia_lista_filmes\", \"args\": [{\"arg\": \"obtem_proximos_lancamentos\"}]}"
                         },
