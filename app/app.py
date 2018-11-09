@@ -1,4 +1,4 @@
-import logic
+import controller
 import messenger_api
 
 from flask import Flask
@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 @app.route('/', methods=['POST'])
 def post():
-    Thread(target=logic.nova_mensagem,args=([request._get_current_object()])).start()
+    Thread(target=controller.nova_mensagem,args=([request._get_current_object()])).start()
 
     return '', 200
 

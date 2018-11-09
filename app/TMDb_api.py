@@ -2,6 +2,7 @@ import hashlib
 import json
 import urllib
 import requests
+import os
 
 from datetime import datetime
 from config import keys
@@ -15,11 +16,11 @@ DISCOVER_URL = BASE_URL + 'discover/movie'
 GENRE_LIST_URL = BASE_URL + 'genre/movie/list'
 GET_VIDEOS_URL = BASE_URL + 'movie/%s/videos'
 
+CACHE_FILE = 'cache/%s.json'
+
 genre_list = {}
 
 def obtem_genero(genre_id):
-    global genre_list
-
     if len(genre_list) == 0:
         for genre in json.loads(request(GENRE_LIST_URL, None))['genres']:
             genre_list[genre['id']] = genre['name']
@@ -66,24 +67,25 @@ def request(url, params=None, language='pt-BR'):
     if params:
         url += '&' + urllib.parse.urlencode(params)
 
-    path = 'cache/' + hashlib.md5(url.encode()).hexdigest() + '.json'
+    if not os.path.exists('cache'):
+        os.makedirs('cache')
+
+    path = CACHE_FILE % hashlib.md5(url.encode()).hexdigest()
 
     try:
-        with open(path,'r') as arq:
-            return arq.read()
-
+        return obtem_do_cache(path)
     except FileNotFoundError:
-        response = requests.get(url)
-    
-        response_json = json.loads(response.text)
+        return novo_cache(path, url)
 
-        if response.status_code == 200:
-            if response_json.get('total_results') and int(response_json['total_results']) <= 0:
-                print('TMDb\n' + response.text + '\nTMDb')
+def obtem_do_cache(path):
+    with open(path,'r') as arq:
+        return arq.read()
 
-            with open(path, 'w') as arq:
-                arq.write(response.text)
-        else:
-            print('TMDb\n' + response.text + '\nTMDb')
+def novo_cache(path, url):
+    response = requests.get(url)
 
-        return response.text
+    if response.status_code == 200:
+        with open(path, 'w') as arq:
+            arq.write(response.text)
+
+    return response.text

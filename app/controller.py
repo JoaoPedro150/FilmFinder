@@ -1,7 +1,11 @@
 import messenger_api
 import chat
 import json
-    
+
+from datetime import datetime
+
+log = open('logs/%s.log' % datetime.now().strftime('%d-%m-%Y'), 'a')
+
 def nova_mensagem(request):
 
     for event in request.get_json()['entry']:
@@ -18,6 +22,7 @@ def nova_mensagem(request):
 
                         if message_text:
                             chat.consulta_filme(sender_id, message_text, 0)
+                            logger('MESSAGE: "%s" - %s' % (message_text, datetime.now()))
                 else:
                     postback(sender_id, entry.get('postback'))
                     
@@ -33,6 +38,8 @@ def postback(sender_id, postback):
     return False
 
 def executar(sender_id, modulo, funcao, args):
+    logger('EXECUTE: %s.%s(%s) - %s' % (modulo, funcao, args, datetime.now()))
+
     args_ = [sender_id]
 
     if args:
@@ -40,3 +47,7 @@ def executar(sender_id, modulo, funcao, args):
             args_.append(args[i]['arg'])
     
     getattr(globals()[modulo], funcao)(*args_)
+
+def logger(line):
+    log.write(line + '\n')
+    log.flush()
