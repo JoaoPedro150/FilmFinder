@@ -18,7 +18,32 @@
                             "payload": "{\"module\": \"chat\", \"function\": \"envia_lista_filmes\", \"args\": [{\"arg\": \"obtem_proximos_lancamentos\"}]}"
                         },
                         {
-                            "title": "Mais bem avaliados",
+                            "title": "Em cinemas",
+                            "type": "postback",
+                            "payload": "{\"module\": \"chat\", \"function\": \"envia_lista_filmes\", \"args\": [{\"arg\": \"obtem_filmes_nos_cinemas\"}]}"
+                        }
+                    ]
+                },{
+                    "title": "Filmes mais bem avalidaos",
+                    "type": "nested",
+                    "call_to_actions": [
+                        {
+                            "title": "Este ano",
+                            "type": "postback",
+                            "payload": "{\"module\": \"chat\", \"function\": \"envia_lista_filmes\", \"args\": [{\"arg\": \"obtem_top_filmes_ano_atual\"}]}"
+                        },
+                        {
+                            "title": "Últimos 5 anos",
+                            "type": "postback",
+                            "payload": "{\"module\": \"chat\", \"function\": \"envia_lista_filmes\", \"args\": [{\"arg\": \"obtem_top_filmes_5_anos\"}]}"
+                        },
+                        {
+                            "title": "Últimos 10 anos",
+                            "type": "postback",
+                            "payload": "{\"module\": \"chat\", \"function\": \"envia_lista_filmes\", \"args\": [{\"arg\": \"obtem_top_filmes_10_anos\"}]}"
+                        },
+                        {
+                            "title": "Todos",
                             "type": "postback",
                             "payload": "{\"module\": \"chat\", \"function\": \"envia_lista_filmes\", \"args\": [{\"arg\": \"obtem_top_filmes\"}]}"
                         }

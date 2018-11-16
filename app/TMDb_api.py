@@ -53,12 +53,27 @@ def obtem_top_filmes_populares(page=1):
     return request(DISCOVER_URL, {'page': page})
 
 def obtem_proximos_lancamentos(page=1):
-    return request(DISCOVER_URL, 
-    {'page': page, 'primary_release_date.gte': datetime.now().strftime('%Y-%m-%d')})
+    return request(DISCOVER_URL,  {'page': page, 'primary_release_date.gte': datetime.now().strftime('%Y-%m-%d')})
 
-def obtem_top_filmes(page=1):
-    return request(DISCOVER_URL, 
-    {'page': page, 'sort_by': 'vote_average.desc', 'vote_count.gte': 999})
+def obtem_top_filmes(page=1, ano=None):
+    if ano:
+        return request(DISCOVER_URL, {'page': page, 'sort_by': 'vote_average.desc', 'vote_count.gte': 999, 'primary_release_year': ano})
+    else:
+        return request(DISCOVER_URL, {'page': page, 'sort_by': 'vote_average.desc', 'vote_count.gte': 999})
+
+def obtem_top_filmes_ano_atual(page=1):
+    return obtem_top_filmes(page, datetime.now().year)
+
+def obtem_top_filmes_5_anos(page=1):
+    return obtem_top_filmes(page, datetime.now().year - 5)
+
+def obtem_top_filmes_10_anos(page=1):
+    return obtem_top_filmes(page, datetime.now().year - 10)
+
+def obtem_filmes_nos_cinemas(page=1):
+    hoje = datetime.now()
+    return request(DISCOVER_URL, {'page': page, 'primary_release_date.lte': hoje.strftime('%Y-%m-%d'),
+                                                'primary_release_date.gte': hoje.replace(month = hoje.month - 1).strftime('%Y-%m-%d') })
 
 def request(url, params=None, language='pt-BR'):
 

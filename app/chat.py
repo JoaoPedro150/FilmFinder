@@ -98,9 +98,13 @@ def envia_lista_filmes(recipient_id, function_name, page=1, result=0, number=1):
         page += 1
         result = 0
     
-    filmes_json = json.loads(getattr(globals()['TMDb_api'], function_name)(page))['results']
+    filmes_json = json.loads(getattr(globals()['TMDb_api'], function_name)(page))
+    total_resultados = int(filmes_json['total_results'])
+
+    filmes_json = filmes_json['results']
+    msg = str(number)
     
-    while True:
+    while number <= total_resultados:
         filmes_lista.append({'title': ('%dº - %s' ) % (number, filmes_json[result]['title']),
         'button': filmes_json[result]['title'],
         'sinopse': TMDb_api.obtem_sinopse(filmes_json[result]['title'])})
@@ -113,10 +117,13 @@ def envia_lista_filmes(recipient_id, function_name, page=1, result=0, number=1):
         number += 1
         if result % 10 == 0: break
     
+    messenger_api.envia_mensagem_texto(recipient_id, '%s-%d de %d filmes.' % (msg,number-1,total_resultados))
     messenger_api.envia_lista(recipient_id, filmes_lista)
     messenger_api.envia_acao(recipient_id, 'typing_off')
-    return messenger_api.envia_botao(recipient_id, 'Clique abaixo para ver a próxima página!',
-    [{'type': 'postback', 'title': 'Ver mais', 'payload': json.dumps({'module': 'chat', 'function': 'envia_lista_filmes', 'args': [{'arg': function_name}, {'arg': page}, {'arg': result}, {'arg': number}]})}])    
+
+    if number <= total_resultados:
+        messenger_api.envia_botao(recipient_id, 'Clique abaixo para ver a próxima página!',
+        [{'type': 'postback', 'title': 'Ver mais', 'payload': json.dumps({'module': 'chat', 'function': 'envia_lista_filmes', 'args': [{'arg': function_name}, {'arg': page}, {'arg': result}, {'arg': number}]})}])    
 
 def envia_boas_vindas(recipient_id):
     messenger_api.envia_mensagem_texto(recipient_id, 'Olá ' + messenger_api.obter_nome_usuario(recipient_id) + ', tudo bem?\n' +
