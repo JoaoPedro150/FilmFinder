@@ -1,5 +1,6 @@
 import controller
 import messenger_api
+import os
 
 from flask import Flask
 from flask import request
@@ -18,4 +19,4 @@ def get():
     return messenger_api.autenticacao(request._get_current_object())
 
 if __name__ == '__main__':
-    app.run(port=8080, debug=True)
+    app.run(debug=True, port=int(os.getenv("PORT")), host='0.0.0.0')
