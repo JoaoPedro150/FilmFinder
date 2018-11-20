@@ -1,5 +1,4 @@
 __pycache__/
-app/config/keys.py
 test/
 app/cache/
 app/logs
