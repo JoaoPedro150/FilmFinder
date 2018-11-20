@@ -7,7 +7,7 @@ from datetime import datetime
 
 IMAGE_NOT_FOUND_URL = 'http://www.piniswiss.com/wp-content/uploads/2013/05/image-not-found-4a963b95bf081c3ea02923dceaeb3f8085e1a654fc54840aac61a57a60903fef-300x199.png'
 
-languages = json.loads(open('util/languages-ISO-639.json','r').read())
+languages = json.loads(open('app/util/languages-ISO-639.json','r').read())
 
 def consulta_filme(recipient_id, filme, result=-1, page=1):
 

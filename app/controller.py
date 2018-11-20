@@ -4,8 +4,6 @@ import json
 
 from datetime import datetime
 
-log = open('logs/%s.log' % datetime.now().strftime('%d-%m-%Y'), 'a')
-
 def nova_mensagem(request):
 
     for event in request.get_json()['entry']:
@@ -49,5 +47,4 @@ def executar(sender_id, modulo, funcao, args):
     getattr(globals()[modulo], funcao)(*args_)
 
 def logger(line):
-    log.write(line + '\n')
-    log.flush()
+    print(line)

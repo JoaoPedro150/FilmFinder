@@ -1,4 +1,0 @@
-EXECUTE: chat.consulta_filme([{'arg': 'Rock'}, {'arg': 1}, {'arg': 1}]) - 2018-11-09 11:26:11.503745
-EXECUTE: chat.consulta_filme([{'arg': 'Rock'}, {'arg': 1}, {'arg': 1}]) - 2018-11-09 11:27:02.152383
-EXECUTE: chat.envia_lista_filmes([{'arg': 'obtem_proximos_lancamentos'}]) - 2018-11-09 11:40:04.303920
-MESSAGE: "A busca" - 2018-11-09 11:40:46.016548
