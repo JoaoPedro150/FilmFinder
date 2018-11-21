@@ -7,7 +7,7 @@ MESSAGE_SEND_URL = BASE_URL + 'v2.6/me/messages'
 
 def autenticacao(request):
     if request.args.get('hub.mode') == 'subscribe' and request.args.get('hub.verify_token') == keys.VERIFY_TOKEN:
-        return request.args.get('hub.challenge')
+        return request.args.get('hub.challenge'), 200
     else: 
         return '', 403
 
@@ -55,7 +55,7 @@ def envia_acao(recipient_id, action):
 
 def envia(recipient_id, json):
     json['recipient'] = {'id': recipient_id}
-    print(requests.post(MESSAGE_SEND_URL, json=json, params={'access_token': keys.ACCESS_TOKEN}).text)
+    requests.post(MESSAGE_SEND_URL, json=json, params={'access_token': keys.ACCESS_TOKEN})
 
 def obter_nome_usuario(recipient_id):
     return json.loads(requests.get(BASE_URL + recipient_id, params={'fields': 'first_name', 'access_token': keys.ACCESS_TOKEN}).text)['first_name']

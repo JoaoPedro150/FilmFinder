@@ -4,6 +4,7 @@ import os
 
 from flask import Flask
 from flask import request
+from flask import abort
 from threading import Thread
 
 app = Flask(__name__)
@@ -16,7 +17,9 @@ def post():
 
 @app.route('/', methods=['GET'])
 def get():
-    return messenger_api.autenticacao(request._get_current_object())
+    status = messenger_api.autenticacao(request._get_current_object())
+    if status[1] == 200: return status
+    abort(403)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=int(os.getenv("PORT")), host='0.0.0.0')
+    app.run(port=int(os.getenv("PORT")), host='0.0.0.0')

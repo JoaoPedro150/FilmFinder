@@ -2,7 +2,6 @@ import hashlib
 import json
 import urllib
 import requests
-import os
 
 from datetime import datetime
 from config import keys
@@ -15,8 +14,6 @@ SEARCH_URL =  BASE_URL + 'search/movie'
 DISCOVER_URL = BASE_URL + 'discover/movie'
 GENRE_LIST_URL = BASE_URL + 'genre/movie/list'
 GET_VIDEOS_URL = BASE_URL + 'movie/%s/videos'
-
-CACHE_FILE = 'cache/%s.json'
 
 genre_list = {}
 
@@ -82,25 +79,4 @@ def request(url, params=None, language='pt-BR'):
     if params:
         url += '&' + urllib.parse.urlencode(params)
 
-    if not os.path.exists('cache'):
-        os.makedirs('cache')
-
-    path = CACHE_FILE % hashlib.md5(url.encode()).hexdigest()
-
-    try:
-        return obtem_do_cache(path)
-    except FileNotFoundError:
-        return novo_cache(path, url)
-
-def obtem_do_cache(path):
-    with open(path,'r') as arq:
-        return arq.read()
-
-def novo_cache(path, url):
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        with open(path, 'w') as arq:
-            arq.write(response.text)
-
-    return response.text
+    return requests.get(url).text
